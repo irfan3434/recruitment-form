@@ -30,6 +30,7 @@ const auth = new google.auth.JWT(client_email, null, private_key, [
 
 // Initialize the Sheets API
 const sheets = google.sheets({ version: 'v4', auth });
+const uploadFile = require('./uploadGoogleDrive');
 
 // Connect to MongoDB
 mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -93,10 +94,12 @@ app.post('/submit-form', upload.single('resume'), async (req, res) => {
   const { firstName, lastName, email, phone, profession, address, highestEducation, fieldOfStudy, institute, companyName, positionTitle, yearsOfExperience, skills } = req.body;
 
   let encodedFile = null;
+  let resumeLink = '';
   if (req.file) {
     const fileBuffer = await fs.promises.readFile(req.file.path);
     encodedFile = fileBuffer.toString('base64');
     await fs.promises.unlink(req.file.path); // Clean up the uploaded file after processing
+    resumeLink = await uploadFile(req.file.path, '15jUHgsCKxQMkXsLCLvebd3_8QBhSOOFc');
   }
 
   const skillsFormatted = Array.isArray(skills) ? skills.join(', ') : skills;
@@ -136,7 +139,8 @@ app.post('/submit-form', upload.single('resume'), async (req, res) => {
         firstName, lastName, email, phone, profession, address,
         ...flattenEducationEntries(educationEntries),
         ...flattenExperienceEntries(experienceEntries),
-        skillsFormatted
+        skillsFormatted,
+        resumeLink
       ],
     ];
     
