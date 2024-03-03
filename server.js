@@ -179,9 +179,12 @@ app.get('/', (req, res) => {
   res.send('Welcome to my application!');
 });
 
+/*
+
 app.use((err, req, res) => {
   console.error(err.stack);
   res.status(500).send('Something broke!');
   console.log('Incoming Request:', req.path);
 });
 
+*/

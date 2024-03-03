@@ -1,3 +1,5 @@
+/*
+
 const { google } = require('googleapis');
 const fs = require('fs');
 const path = require('path');
@@ -43,3 +45,4 @@ async function uploadFile(filePath, folderId) {
 module.exports = uploadFile;
 // Example usage (replace 'path/to/resume.pdf' with the actual path and 'folderId' with actual folder ID)
 // uploadFile('path/to/resume.pdf', '15jUHgsCKxQMkXsLCLvebd3_8QBhSOOFc').then(data => console.log(data));
+*/
