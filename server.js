@@ -8,14 +8,10 @@ const fs = require('fs');
 require('dotenv').config();
 
 const app = express();
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*"); // or "https://www.fcec.sa" for specific origin
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  next();
-});
-
 const PORT = process.env.PORT || 3000;
+
+app.use(cors());
+app.use(express.static('public'));
 
 const corsOptions = {
   origin: '*',
@@ -25,7 +21,7 @@ app.use(cors(corsOptions));
 app.use(express.static('public'));
 
 // Setup multer for file uploads
-const upload = multer({ dest: 'uploads/' });
+//const upload = multer({ dest: 'uploads/' });
 
 const mongoUri = process.env.MONGO_URI;
 
@@ -41,7 +37,7 @@ const auth = new google.auth.JWT(client_email, null, private_key, [
 
 // Initialize the Sheets API
 const sheets = google.sheets({ version: 'v4', auth });
-const uploadFile = require('./googleDriveUpload');
+//const uploadFile = require('./googleDriveUpload');
 
 // Connect to MongoDB
 mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -67,7 +63,7 @@ const applicationFormSchema = new mongoose.Schema({
     yearsOfExperience: Number,
   }],
   skills: [String],
-  resume: String,
+  //resume: String,
 });
 
 
@@ -101,8 +97,8 @@ function flattenExperienceEntries(entries) {
 
 
 // Route to handle form submission
-app.options('/submit-form', cors(corsOptions));
-app.post('/submit-form', cors(corsOptions), upload.single('resume'), async (req, res) => {
+//app.options('/submit-form', cors(corsOptions));
+app.post('/submit-form', cors(corsOptions), async (req, res) => {
   const { firstName, lastName, email, phone, profession, address, highestEducation, fieldOfStudy, institute, companyName, positionTitle, yearsOfExperience, skills } = req.body;
 
   let encodedFile = null;
@@ -140,7 +136,7 @@ app.post('/submit-form', cors(corsOptions), upload.single('resume'), async (req,
       education: educationEntries,
       experience: experienceEntries,
       skills: skillsFormatted,
-      resume: encodedFile,
+      //resume: encodedFile,
     });
 
     await applicationFormEntry.save();
@@ -152,7 +148,7 @@ app.post('/submit-form', cors(corsOptions), upload.single('resume'), async (req,
         ...flattenEducationEntries(educationEntries),
         ...flattenExperienceEntries(experienceEntries),
         skillsFormatted,
-        resumeLink
+        //resumeLink
       ],
     ];
     
