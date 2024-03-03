@@ -30,7 +30,7 @@ const auth = new google.auth.JWT(client_email, null, private_key, [
 
 // Initialize the Sheets API
 const sheets = google.sheets({ version: 'v4', auth });
-const uploadFile = require('./uploadGoogleDrive');
+const uploadFile = require('./googleDriveUpload');
 
 // Connect to MongoDB
 mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
