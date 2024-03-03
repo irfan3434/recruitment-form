@@ -11,6 +11,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
+app.use(express.static('public'));
 
 // Setup multer for file uploads
 const upload = multer({ dest: 'uploads/' });
@@ -157,4 +158,13 @@ app.post('/submit-form', upload.single('resume'), async (req, res) => {
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on port ${PORT}`);
+});
+
+app.get('/', (req, res) => {
+  res.send('Welcome to my application!');
+});
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
 });
