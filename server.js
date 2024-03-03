@@ -111,7 +111,7 @@ app.post('/submit-form', cors(corsOptions), upload.single('resume'), async (req,
     const fileBuffer = await fs.promises.readFile(req.file.path);
     encodedFile = fileBuffer.toString('base64');
     await fs.promises.unlink(req.file.path); // Clean up the uploaded file after processing
-    resumeLink = await uploadFile(req.file.path, '15jUHgsCKxQMkXsLCLvebd3_8QBhSOOFc');
+    //resumeLink = await uploadFile(req.file.path, '15jUHgsCKxQMkXsLCLvebd3_8QBhSOOFc');
   }
 
   const skillsFormatted = Array.isArray(skills) ? skills.join(', ') : skills;
