@@ -10,7 +10,11 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
+const corsOptions = {
+  origin: '*',
+};
+
+app.use(cors(corsOptions));
 app.use(express.static('public'));
 
 // Setup multer for file uploads
@@ -92,6 +96,7 @@ function flattenExperienceEntries(entries) {
 // Route to handle form submission
 //app.options('/submit-form', cors(corsOptions));
 app.post('/submit-form', cors(corsOptions), async (req, res) => {
+
   const { firstName, lastName, email, phone, profession, address, highestEducation, fieldOfStudy, institute, companyName, positionTitle, yearsOfExperience, skills } = req.body;
 
   let encodedFile = null;
@@ -166,12 +171,11 @@ app.listen(PORT, '0.0.0.0', () => {
 });
 
 app.get('/', (req, res) => {
-  res.send('Welcome to my application!');
+  res.json({ message: 'CORS is configured correctly.' });
 });
 
 app.use((err, req, res) => {
   console.error(err.stack);
   res.status(500).send('Something broke!');
-  console.log('Incoming Request:', req.path);
 });
 
