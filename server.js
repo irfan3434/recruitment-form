@@ -8,11 +8,16 @@ const fs = require('fs');
 require('dotenv').config();
 
 const app = express();
+app.use((req, res, next) => {
+  console.log('Incoming Request:', req.method, req.path);
+  next();
+});
 const PORT = process.env.PORT || 3000;
 
 const corsOptions = {
-  origin: '*', // or use '*' to allow any origin
-  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+  origin: 'https://www.fcec.sa',
+  optionsSuccessStatus: 200,
+  credentials: true,
 };
 
 app.use(cors(corsOptions));
@@ -95,7 +100,8 @@ function flattenExperienceEntries(entries) {
 
 
 // Route to handle form submission
-app.post('/submit-form', upload.single('resume'), async (req, res) => {
+app.options('/submit-form', cors(corsOptions));
+app.post('/submit-form', cors(corsOptions), upload.single('resume'), async (req, res) => {
   const { firstName, lastName, email, phone, profession, address, highestEducation, fieldOfStudy, institute, companyName, positionTitle, yearsOfExperience, skills } = req.body;
 
   let encodedFile = null;
@@ -176,4 +182,6 @@ app.get('/', (req, res) => {
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send('Something broke!');
+  console.log('Incoming Request:', req.path);
 });
+
