@@ -9,15 +9,16 @@ require('dotenv').config();
 
 const app = express();
 app.use((req, res, next) => {
-  console.log('Incoming Request:', req.method, req.path);
+  res.header("Access-Control-Allow-Origin", "*"); // or "https://www.fcec.sa" for specific origin
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   next();
 });
+
 const PORT = process.env.PORT || 3000;
 
 const corsOptions = {
   origin: '*',
-  optionsSuccessStatus: 200,
-  credentials: true,
 };
 
 app.use(cors(corsOptions));
