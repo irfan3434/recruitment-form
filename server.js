@@ -8,7 +8,7 @@ const fs = require('fs');
 require('dotenv').config();
 
 const app = express();
-app.use((req, next) => {
+app.use((req, res, next) => {
   console.log('Incoming Request:', req.method, req.path);
   next();
 });
@@ -40,8 +40,7 @@ const auth = new google.auth.JWT(client_email, null, private_key, [
 
 // Initialize the Sheets API
 const sheets = google.sheets({ version: 'v4', auth });
-
-//const uploadFile = require('./googleDriveUpload');
+const uploadFile = require('./googleDriveUpload');
 
 // Connect to MongoDB
 mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -111,7 +110,7 @@ app.post('/submit-form', cors(corsOptions), upload.single('resume'), async (req,
     const fileBuffer = await fs.promises.readFile(req.file.path);
     encodedFile = fileBuffer.toString('base64');
     await fs.promises.unlink(req.file.path); // Clean up the uploaded file after processing
-    //resumeLink = await uploadFile(req.file.path, '15jUHgsCKxQMkXsLCLvebd3_8QBhSOOFc');
+    resumeLink = await uploadFile(req.file.path, '15jUHgsCKxQMkXsLCLvebd3_8QBhSOOFc');
   }
 
   const skillsFormatted = Array.isArray(skills) ? skills.join(', ') : skills;
@@ -151,7 +150,8 @@ app.post('/submit-form', cors(corsOptions), upload.single('resume'), async (req,
         firstName, lastName, email, phone, profession, address,
         ...flattenEducationEntries(educationEntries),
         ...flattenExperienceEntries(experienceEntries),
-        skillsFormatted
+        skillsFormatted,
+        resumeLink
       ],
     ];
     
@@ -179,12 +179,9 @@ app.get('/', (req, res) => {
   res.send('Welcome to my application!');
 });
 
-/*
-
 app.use((err, req, res) => {
   console.error(err.stack);
   res.status(500).send('Something broke!');
   console.log('Incoming Request:', req.path);
 });
 
-*/
