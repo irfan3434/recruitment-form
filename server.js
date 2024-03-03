@@ -13,13 +13,6 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.static('public'));
 
-const corsOptions = {
-  origin: '*',
-};
-
-app.use(cors(corsOptions));
-app.use(express.static('public'));
-
 // Setup multer for file uploads
 //const upload = multer({ dest: 'uploads/' });
 
