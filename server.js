@@ -151,8 +151,7 @@ app.post('/submit-form', cors(corsOptions), upload.single('resume'), async (req,
         firstName, lastName, email, phone, profession, address,
         ...flattenEducationEntries(educationEntries),
         ...flattenExperienceEntries(experienceEntries),
-        skillsFormatted,
-        resumeLink
+        skillsFormatted
       ],
     ];
     
