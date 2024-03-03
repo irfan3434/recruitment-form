@@ -8,14 +8,14 @@ const fs = require('fs');
 require('dotenv').config();
 
 const app = express();
-app.use((req, res, next) => {
+app.use((req, next) => {
   console.log('Incoming Request:', req.method, req.path);
   next();
 });
 const PORT = process.env.PORT || 3000;
 
 const corsOptions = {
-  origin: 'https://www.fcec.sa',
+  origin: '*',
   optionsSuccessStatus: 200,
   credentials: true,
 };
@@ -40,7 +40,8 @@ const auth = new google.auth.JWT(client_email, null, private_key, [
 
 // Initialize the Sheets API
 const sheets = google.sheets({ version: 'v4', auth });
-const uploadFile = require('./googleDriveUpload');
+
+//const uploadFile = require('./googleDriveUpload');
 
 // Connect to MongoDB
 mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -179,7 +180,7 @@ app.get('/', (req, res) => {
   res.send('Welcome to my application!');
 });
 
-app.use((err, req, res, next) => {
+app.use((err, req, res) => {
   console.error(err.stack);
   res.status(500).send('Something broke!');
   console.log('Incoming Request:', req.path);
