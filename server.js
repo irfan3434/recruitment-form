@@ -3,6 +3,7 @@ const { google } = require('googleapis');
 const cors = require('cors');
 const express = require('express');
 const multer = require('multer');
+const nodemailer = require('nodemailer');
 const mongoose = require('mongoose');
 const fs = require('fs');
 require('dotenv').config();
