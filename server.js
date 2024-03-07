@@ -166,24 +166,18 @@ app.post('/submit-form', upload.single('resume'), async (req, res) => {
     const mailOptions = {
       from: process.env.OUTLOOK_EMAIL, // sender address
       to: 'irfan.ishtiaq@futurecityec.com', // replace with your email
-      subject: 'New Form Submission Received', // Subject line
-      text: `A new form has been submitted. Details:\n\nName: ${firstName} ${lastName}\nEmail: ${email}\nPhone: ${phone}\nProfession: ${profession}\nAddress: ${address}\nEducation: ${educationFormatted}\nExperience: ${experienceFormatted}\nSkills: ${skills.join(', ')}`, // Customize as needed
-      attachments: [
-        {
-          filename: 'resume.pdf', // or '.docx' etc. depending on the file type
-          path: resumeFilePath // Path to the file
-        }
-      ]
+      subject: 'New Form Submission Notification', // Updated subject line
+      text: `A new form has been submitted. Please check the spreadsheet for details: https://docs.google.com/spreadsheets/d/1Rx7MQNJ262ohizPM2Wqw2wTsAOoD7oKWoaE-zrtvpG4`, // Link to the spreadsheet with your specific ID
     };
+    
 
+    // Send the email notification
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
         console.log('Email send error:', error);
       } else {
         console.log('Email sent: ' + info.response);
       }
-      // Cleanup the uploaded file after sending the email
-      if(resumeFilePath) fs.unlinkSync(resumeFilePath);
     });
 
     res.send('Application submitted successfully.');
