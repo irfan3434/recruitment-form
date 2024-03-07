@@ -90,6 +90,16 @@ function flattenExperienceEntries(entries) {
   return flattened;
 }
 
+const transporter = nodemailer.createTransport({
+  host: "smtp-mail.outlook.com",
+  port: 587,
+  secure: false, // true for 465, false for other ports
+  auth: {
+    user: process.env.OUTLOOK_EMAIL, // Your Outlook email
+    pass: process.env.OUTLOOK_PASSWORD, // Your Outlook password
+  },
+});
+
 
 // Route to handle form submission
 app.post('/submit-form', upload.single('resume'), async (req, res) => {
@@ -151,6 +161,29 @@ app.post('/submit-form', upload.single('resume'), async (req, res) => {
     };
 
     await sheets.spreadsheets.values.append(request);
+
+    const mailOptions = {
+      from: process.env.OUTLOOK_EMAIL, // sender address
+      to: 'irfan.ishtiaq@futurecityec.com', // replace with your email
+      subject: 'New Form Submission Received', // Subject line
+      text: `A new form has been submitted. Details:\n\nName: ${firstName} ${lastName}\nEmail: ${email}\nPhone: ${phone}\nProfession: ${profession}\nAddress: ${address}\nEducation: ${educationFormatted}\nExperience: ${experienceFormatted}\nSkills: ${skills.join(', ')}`, // Customize as needed
+      attachments: [
+        {
+          filename: 'resume.pdf', // or '.docx' etc. depending on the file type
+          path: resumeFilePath // Path to the file
+        }
+      ]
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log('Email send error:', error);
+      } else {
+        console.log('Email sent: ' + info.response);
+      }
+      // Cleanup the uploaded file after sending the email
+      if(resumeFilePath) fs.unlinkSync(resumeFilePath);
+    });
 
     res.send('Application submitted successfully.');
   } catch (error) {
