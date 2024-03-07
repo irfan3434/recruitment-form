@@ -165,7 +165,7 @@ app.post('/submit-form', upload.single('resume'), async (req, res) => {
 
     const mailOptions = {
       from: process.env.OUTLOOK_EMAIL, // sender address
-      to: 'irfan.ishtiaq@futurecityec.com', // replace with your email
+      to: 'info@futurecityec.com', // replace with your email
       subject: 'New Form Submission Notification', // Updated subject line
       text: `A new form has been submitted. Please check the spreadsheet for details: https://docs.google.com/spreadsheets/d/1Rx7MQNJ262ohizPM2Wqw2wTsAOoD7oKWoaE-zrtvpG4`, // Link to the spreadsheet with your specific ID
     };
