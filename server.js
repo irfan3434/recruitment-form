@@ -29,7 +29,7 @@ const credentials = JSON.parse(Buffer.from(process.env.GOOGLE_CREDENTIALS_BASE64
 
 // Configure JWT auth client
 const { client_email, private_key } = credentials;
-const auth = new google.auth.JWT(client_email, null, private_key, [
+const auth = new google.auth.JWT(credentials.client_email, null, credentials.private_key, [
   'https://www.googleapis.com/auth/spreadsheets',
 ]);
 
