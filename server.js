@@ -24,7 +24,8 @@ const mongoUri = process.env.MONGO_URI;
 
 // Path to your service account credentials JSON file
 // Adjust the path as necessary, or use an environment variable
-const credentials = JSON.parse(Buffer.from(process.env.GOOGLE_CREDENTIALS_BASE64, 'base64').toString('ascii'));
+const CREDENTIALS_PATH = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+const credentials = JSON.parse(fs.readFileSync(CREDENTIALS_PATH, 'utf8'));
 
 // Configure JWT auth client
 const { client_email, private_key } = credentials;
