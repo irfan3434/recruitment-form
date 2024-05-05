@@ -12,7 +12,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const corsOptions = {
-  origin: '*', // Replace with your actual domain
+  origin: 'https://www.fcec.sa',
   optionsSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
