@@ -1,5 +1,4 @@
 // Import necessary libraries
-const { google } = require('googleapis');
 const cors = require('cors');
 const express = require('express');
 const multer = require('multer');
@@ -22,18 +21,6 @@ const upload = multer({ dest: 'uploads/' });
 
 const mongoUri = process.env.MONGO_URI;
 
-
-const credentials = JSON.parse(Buffer.from(process.env.GOOGLE_CREDENTIALS_BASE64, 'base64').toString('ascii'));
-
-// Configure JWT auth client
-const { client_email, private_key } = credentials;
-const auth = new google.auth.JWT(credentials.client_email, null, credentials.private_key, [
-  'https://www.googleapis.com/auth/spreadsheets',
-]);
-
-// Initialize the Sheets API
-const sheets = google.sheets({ version: 'v4', auth });
-
 // Connect to MongoDB
 mongoose.connect(mongoUri, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Connected to MongoDB...'))
@@ -48,9 +35,9 @@ const applicationFormSchema = new mongoose.Schema({
   profession: String,
   address: String,
   education: [{
-  highestEducation: String,
-  fieldOfStudy: String,
-  institute: String,
+    highestEducation: String,
+    fieldOfStudy: String,
+    institute: String,
   }],
   experience: [{
     companyName: String,
@@ -61,34 +48,11 @@ const applicationFormSchema = new mongoose.Schema({
   resume: String,
 });
 
-
 const ApplicationForm = mongoose.model('ApplicationForm', applicationFormSchema);
 
 // Express middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
-
-function flattenEducationEntries(entries) {
-  const flattened = [];
-  entries.forEach(entry => {
-    flattened.push(entry.highestEducation || "");
-    flattened.push(entry.fieldOfStudy || "");
-    flattened.push(entry.institute || "");
-  });
-  return flattened;
-}
-
-// Flatten Function for Experience Entries
-function flattenExperienceEntries(entries) {
-  const flattened = [];
-  entries.forEach(entry => {
-    flattened.push(entry.companyName || "");
-    flattened.push(entry.positionTitle || "");
-    flattened.push(entry.yearsOfExperience || "");
-  });
-  return flattened;
-}
 
 const transporter = nodemailer.createTransport({
   host: "smtp-mail.outlook.com",
@@ -99,7 +63,6 @@ const transporter = nodemailer.createTransport({
     pass: process.env.OUTLOOK_PASSWORD, // Your Outlook password
   },
 });
-
 
 // Route to handle form submission
 app.post('/submit-form', upload.single('resume'), async (req, res) => {
@@ -114,19 +77,6 @@ app.post('/submit-form', upload.single('resume'), async (req, res) => {
 
   const skillsFormatted = Array.isArray(skills) ? skills.join(', ') : skills;
 
-  // Define educationEntries and experienceEntries before using them
-  const educationEntries = highestEducation.map((educationLevel, index) => ({
-    highestEducation: educationLevel,
-    fieldOfStudy: fieldOfStudy[index],
-    institute: institute[index],
-  }));
-
-  const experienceEntries = companyName.map((company, index) => ({
-    companyName: company,
-    positionTitle: positionTitle[index],
-    yearsOfExperience: yearsOfExperience[index],
-  }));
-
   try {
     const applicationFormEntry = new ApplicationForm({
       firstName,
@@ -135,54 +85,42 @@ app.post('/submit-form', upload.single('resume'), async (req, res) => {
       phone,
       profession,
       address,
-      education: educationEntries,
-      experience: experienceEntries,
+      education: highestEducation.map((educationLevel, index) => ({
+        highestEducation: educationLevel,
+        fieldOfStudy: fieldOfStudy[index],
+        institute: institute[index],
+      })),
+      experience: companyName.map((company, index) => ({
+        companyName: company,
+        positionTitle: positionTitle[index],
+        yearsOfExperience: yearsOfExperience[index],
+      })),
       skills: skillsFormatted,
       resume: encodedFile,
     });
 
     await applicationFormEntry.save();
-    
-    // Prepare data for Google Sheets
-    const rowData = [
-      [
-        firstName, lastName, email, phone, profession, address,
-        ...flattenEducationEntries(educationEntries),
-        ...flattenExperienceEntries(experienceEntries),
-        skillsFormatted
-      ],
-    ];
-    
-    const request = {
-      spreadsheetId: '1Rx7MQNJ262ohizPM2Wqw2wTsAOoD7oKWoaE-zrtvpG4',
-      range: 'Sheet1!A:M',
-      valueInputOption: 'RAW',
-      resource: { values: rowData },
-    };
-
-    await sheets.spreadsheets.values.append(request);
 
     const mailOptions = {
       from: process.env.OUTLOOK_EMAIL, // sender address
       to: 'irfan.ishtiaq@futurecityec.com', // replace with your email
       subject: 'New Form Submission Notification', // Updated subject line
-      text: `A new form has been submitted. Please check the spreadsheet for details: https://docs.google.com/spreadsheets/d/1Rx7MQNJ262ohizPM2Wqw2wTsAOoD7oKWoaE-zrtvpG4`, // Link to the spreadsheet with your specific ID
+      text: 'A new form has been submitted. Please check the database for details.', // Updated text
     };
-    
 
     // Send the email notification
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
         console.log('Email send error:', error);
+        res.status(500).send('Failed to send email notification.');
       } else {
         console.log('Email sent: ' + info.response);
+        res.send('Application submitted successfully.');
       }
     });
-
-    res.send('Application submitted successfully.');
   } catch (error) {
     console.error('Error:', error);
-    res.status(500).send('An error occurred.');
+    res.status(500).send('An error occurred during form submission.');
   }
 });
 
