@@ -45,7 +45,7 @@ const applicationFormSchema = new mongoose.Schema({
     yearsOfExperience: Number,
   }],
   skills: [String],
-  resume: String,
+  resume: String, // storing resume as a base64 encoded string
 });
 
 const ApplicationForm = mongoose.model('ApplicationForm', applicationFormSchema);
@@ -105,7 +105,14 @@ app.post('/submit-form', upload.single('resume'), async (req, res) => {
       from: process.env.OUTLOOK_EMAIL, // sender address
       to: 'irfan.ishtiaq@futurecityec.com', // replace with your email
       subject: 'New Form Submission Notification', // Updated subject line
-      text: 'A new form has been submitted. Please check the database for details.', // Updated text
+      text: 'A new form has been submitted. Please check the database for details.',
+      attachments: [
+        {
+          filename: req.file.originalname, // the original file name
+          content: encodedFile,
+          encoding: 'base64'
+        }
+      ]
     };
 
     // Send the email notification
