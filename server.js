@@ -103,7 +103,7 @@ app.post('/submit-form', upload.single('resume'), async (req, res) => {
 
     const mailOptions = {
       from: process.env.OUTLOOK_EMAIL, // sender address
-      to: 'careers@futurecityec.com', // replace with your email
+      to: 'fcec.announcements@futurecityec.com', // replace with your email
       subject: 'New Form Submission Notification', // Updated subject line
       text: 'A new form has been submitted. Please check the database for details.',
       attachments: [
