@@ -66,7 +66,7 @@ const transporter = nodemailer.createTransport({
 
 // Route to handle form submission
 app.post('/submit-form', upload.single('resume'), async (req, res) => {
-  const { firstName, lastName, email, phone, profession, address, highestEducation, fieldOfStudy, institute, companyName, positionTitle, yearsOfExperience, skills } = req.body;
+  const { firstName, lastName, email, phone, profession, address, highestEducation, fieldOfStudy, institute, companyName, positionTitle, yearsOfExperience, skills, jobPosition } = req.body;
 
   let encodedFile = null;
   if (req.file) {
@@ -97,6 +97,7 @@ app.post('/submit-form', upload.single('resume'), async (req, res) => {
       })),
       skills: skillsFormatted,
       resume: encodedFile,
+      jobPosition,
     });
 
     await applicationFormEntry.save();
@@ -129,6 +130,7 @@ app.post('/submit-form', upload.single('resume'), async (req, res) => {
         <tr><td>Profession</td><td>${profession}</td></tr>
         <tr><td>Address</td><td>${address}</td></tr>
         <tr><td>Skills</td><td>${skillsFormatted}</td></tr>
+        <tr><td>Job Position</td><td>${jobPosition}</td></tr>
       </table>
 
       <p><strong>Educational Background:</strong></p>
