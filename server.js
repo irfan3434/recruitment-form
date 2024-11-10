@@ -101,14 +101,58 @@ app.post('/submit-form', upload.single('resume'), async (req, res) => {
 
     await applicationFormEntry.save();
 
+    // Generate the HTML table for email content
+    const educationTableRows = highestEducation.map((educationLevel, index) => `
+      <tr>
+        <td>${educationLevel}</td>
+        <td>${fieldOfStudy[index]}</td>
+        <td>${institute[index]}</td>
+      </tr>
+    `).join('');
+
+    const experienceTableRows = companyName.map((company, index) => `
+      <tr>
+        <td>${company}</td>
+        <td>${positionTitle[index]}</td>
+        <td>${yearsOfExperience[index]}</td>
+      </tr>
+    `).join('');
+
+    const emailContent = `
+      <h2>New Job Application Received</h2>
+      <p><strong>Personal Information:</strong></p>
+      <table border="1" cellpadding="5" cellspacing="0">
+        <tr><td>First Name</td><td>${firstName}</td></tr>
+        <tr><td>Last Name</td><td>${lastName}</td></tr>
+        <tr><td>Email</td><td>${email}</td></tr>
+        <tr><td>Phone</td><td>${phone}</td></tr>
+        <tr><td>Profession</td><td>${profession}</td></tr>
+        <tr><td>Address</td><td>${address}</td></tr>
+        <tr><td>Skills</td><td>${skillsFormatted}</td></tr>
+      </table>
+
+      <p><strong>Educational Background:</strong></p>
+      <table border="1" cellpadding="5" cellspacing="0">
+        <tr><th>Highest Education</th><th>Field of Study</th><th>Institute</th></tr>
+        ${educationTableRows}
+      </table>
+
+      <p><strong>Work Experience:</strong></p>
+      <table border="1" cellpadding="5" cellspacing="0">
+        <tr><th>Company Name</th><th>Title</th><th>Years of Experience</th></tr>
+        ${experienceTableRows}
+      </table>
+    `;
+
+    // Email options with HTML content
     const mailOptions = {
       from: process.env.OUTLOOK_EMAIL, // sender address
-      to: 'fcec.announcements@futurecityec.com', // replace with your email
-      subject: 'New Form Submission Notification', // Updated subject line
-      text: 'A new form has been submitted. Please check the database for details.',
+      to: 'fcec.announcements@futurecityec.com', // recipient email
+      subject: 'New Form Submission Notification',
+      html: emailContent,
       attachments: [
         {
-          filename: req.file.originalname, // the original file name
+          filename: req.file.originalname, // original file name
           content: encodedFile,
           encoding: 'base64'
         }
