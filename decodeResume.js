@@ -18,7 +18,7 @@ const applicantSchema = new mongoose.Schema({
   resume: String, // Base64 encoded resume string
 });
 
-const Applicant = mongoose.model('Applicant', applicantSchema, 'applicationforms'); // Use the actual name of your collection
+const Applicant = mongoose.model('Applicant', applicantSchema, 'Applicants'); // Use the actual name of your collection
 
 async function saveResumeFromBase64(base64String, filePath) {
   // Function to decode Base64 and save as a file

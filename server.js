@@ -48,7 +48,7 @@ const applicationFormSchema = new mongoose.Schema({
   resume: String, // storing resume as a base64 encoded string
 });
 
-const ApplicationForm = mongoose.model('ApplicationForm', applicationFormSchema);
+const ApplicationForm = mongoose.model('ApplicationForm', applicationFormSchema, 'Applicants');
 
 // Express middleware
 app.use(express.urlencoded({ extended: true }));
