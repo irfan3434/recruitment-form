@@ -46,6 +46,7 @@ const applicationFormSchema = new mongoose.Schema({
   }],
   skills: [String],
   resume: String, // storing resume as a base64 encoded string
+  jobPosition: String,
 });
 
 const ApplicationForm = mongoose.model('ApplicationForm', applicationFormSchema, 'Applicants');
