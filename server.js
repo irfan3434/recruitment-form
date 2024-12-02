@@ -12,13 +12,9 @@ const PORT = process.env.PORT || 3000;
 
 const corsOptions = {
   origin: 'https://www.fcec.sa',
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  credentials: true,
-  allowedHeaders: 'Content-Type,Authorization',
   optionsSuccessStatus: 200,
-
 };
-app.use('*', cors(corsOptions));
+app.use(cors(corsOptions));
 
 // Setup multer for file uploads
 const upload = multer({ dest: 'uploads/' });
@@ -73,8 +69,6 @@ const transporter = nodemailer.createTransport({
 app.post('/submit-form', upload.single('resume'), async (req, res) => {
   const { firstName, lastName, email, phone, profession, address, highestEducation, fieldOfStudy, institute, companyName, positionTitle, yearsOfExperience, skills, jobPosition } = req.body;
 
-  const fullPhone = `${country_code}${phone}`;
-
   let encodedFile = null;
   if (req.file) {
     const fileBuffer = await fs.promises.readFile(req.file.path);
@@ -89,7 +83,7 @@ app.post('/submit-form', upload.single('resume'), async (req, res) => {
       firstName,
       lastName,
       email,
-      phone: fullPhone,
+      phone,
       profession,
       address,
       education: highestEducation.map((educationLevel, index) => ({
@@ -133,7 +127,7 @@ app.post('/submit-form', upload.single('resume'), async (req, res) => {
         <tr><td>First Name</td><td>${firstName}</td></tr>
         <tr><td>Last Name</td><td>${lastName}</td></tr>
         <tr><td>Email</td><td>${email}</td></tr>
-        <tr><td>Phone</td><td>${fullPhone}</td></tr>
+        <tr><td>Phone</td><td>${phone}</td></tr>
         <tr><td>Profession</td><td>${profession}</td></tr>
         <tr><td>Address</td><td>${address}</td></tr>
         <tr><td>Skills</td><td>${skillsFormatted}</td></tr>
