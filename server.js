@@ -12,9 +12,13 @@ const PORT = process.env.PORT || 3000;
 
 const corsOptions = {
   origin: 'https://www.fcec.sa',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+  allowedHeaders: 'Content-Type,Authorization',
   optionsSuccessStatus: 200,
+
 };
-app.use(cors(corsOptions));
+app.use('*', cors(corsOptions));
 
 // Setup multer for file uploads
 const upload = multer({ dest: 'uploads/' });
