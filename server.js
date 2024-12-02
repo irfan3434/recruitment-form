@@ -11,7 +11,10 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const corsOptions = {
-  origin: 'https://www.fcec.sa',
+  origin: '*',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Allow specific HTTP methods
+  credentials: true, // Allow cookies or authentication headers
+  allowedHeaders: 'Content-Type,Authorization', // Allow these headers
   optionsSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
