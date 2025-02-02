@@ -151,7 +151,7 @@ app.post('/submit-form', upload.single('resume'), async (req, res) => {
     const mailOptions = {
       from: process.env.OUTLOOK_EMAIL, // sender address
       to: 'info@futurecityec.com', // recipient email
-      subject: `New Application for ${jobPosition} Received!`,
+      subject: `New Job Application Received!`,
       html: emailContent,
       attachments: [
         {
